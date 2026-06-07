@@ -14,7 +14,7 @@ export function personSlug(name: string): string {
   return name
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '') // usuń ogonki/akcenty
+    .replace(/[̀-ͯ]/g, '') // usuń znaki diakrytyczne (ogonki/akcenty)
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 }
