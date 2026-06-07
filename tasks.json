@@ -1,0 +1,501 @@
+{
+  "project": "ZadaniaDom",
+  "description": "PWA dla rodziny Karkinosów do zarządzania domowymi obowiązkami. Dzieci przyjmują i wykonują zadania za monety, rodzice tworzą, zatwierdzają i wypłacają.",
+  "version": "1.0.0",
+  "generatedFrom": "CLAUDE.md",
+  "conventions": {
+    "language": "Wszystkie statusy: todo | in_progress | review | done | blocked",
+    "priority": "P0 (krytyczne) > P1 (wysokie) > P2 (średnie) > P3 (niskie)",
+    "idScheme": "Epic: E<n> | Story: E<n>-S<m>"
+  },
+  "epics": [
+    {
+      "id": "E1",
+      "title": "Fundament projektu",
+      "goal": "Działający szkielet aplikacji Next.js z TypeScript, Tailwind, Supabase i konfiguracją środowiska.",
+      "priority": "P0",
+      "stories": [
+        {
+          "id": "E1-S1",
+          "title": "Inicjalizacja Next.js 14 + TypeScript + Tailwind",
+          "description": "Utworzyć projekt Next.js 14 (App Router) z TypeScript i Tailwind CSS. Skonfigurować strukturę katalogów zgodnie z CLAUDE.md.",
+          "acceptanceCriteria": [
+            "next dev uruchamia się bez błędów",
+            "Tailwind działa (test klasą utility)",
+            "Struktura src/app, src/components, src/lib, src/types, src/hooks istnieje"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": []
+        },
+        {
+          "id": "E1-S2",
+          "title": "Konfiguracja zmiennych środowiskowych",
+          "description": "Utworzyć .env.example z wszystkimi kluczami (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_FCM_VAPID_KEY, FCM_SERVER_KEY). Upewnić się, że .env.local jest w .gitignore.",
+          "acceptanceCriteria": [
+            ".env.example zawiera wszystkie 5 zmiennych",
+            ".env.local w .gitignore",
+            "Brak sekretów w repo"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E1-S1"]
+        },
+        {
+          "id": "E1-S3",
+          "title": "Klienci Supabase (browser + SSR)",
+          "description": "Utworzyć src/lib/supabase/client.ts (browser) i server.ts (SSR) z poprawną inicjalizacją @supabase/ssr.",
+          "acceptanceCriteria": [
+            "createClient dla browsera",
+            "createServerClient dla Server Components z obsługą cookies",
+            "Typowanie zgodne z wygenerowanym schematem DB"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E1-S2"]
+        },
+        {
+          "id": "E1-S4",
+          "title": "Definicje typów TypeScript",
+          "description": "Zdefiniować w src/types/index.ts wszystkie typy domenowe: Person, Role, Task, TaskTemplate, TaskStatus, Submission, Wallet, Transaction, Withdrawal, Comment, Difficulty.",
+          "acceptanceCriteria": [
+            "Wszystkie typy eksportowane z src/types/index.ts",
+            "Typy odzwierciedlają reguły biznesowe (np. status zadania)",
+            "Brak any tam gdzie typ jest znany"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E1-S1"]
+        },
+        {
+          "id": "E1-S5",
+          "title": "Lista szablonów zadań",
+          "description": "Utworzyć src/lib/templates.ts z 10 szablonami zadań (emoji, nazwa, wartość w monetach, trudność) zgodnie z CLAUDE.md.",
+          "acceptanceCriteria": [
+            "10 szablonów: zmywarka załaduj/rozładuj, pranie rozwiesić/rozebrać, odkurzyć salon, łazienka Taty/z wanną, korytarz, pokój Hani&Marii, pokój Soni",
+            "Wartości monet i trudności zgodne z CLAUDE.md",
+            "Typowane jako TaskTemplate[]"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E1-S4"]
+        }
+      ]
+    },
+    {
+      "id": "E2",
+      "title": "Baza danych i schemat",
+      "goal": "Kompletny schemat PostgreSQL w Supabase z migracjami, RLS i danymi początkowymi.",
+      "priority": "P0",
+      "stories": [
+        {
+          "id": "E2-S1",
+          "title": "Schemat tabel (migracja init)",
+          "description": "Migracja SQL: persons (osoby z rolą, kolorem, pin_hash), task_templates, tasks (template_id, executor_id, status, deadline_type, expires_at), submissions, wallets, transactions, withdrawals, comments.",
+          "acceptanceCriteria": [
+            "Wszystkie tabele utworzone z kluczami obcymi",
+            "Enumy/check constraints dla statusów i ról",
+            "Migracja w supabase/migrations/"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E1-S3"]
+        },
+        {
+          "id": "E2-S2",
+          "title": "Row Level Security (RLS)",
+          "description": "Polityki RLS: dziecko widzi tylko swoje monety/transakcje/wypłaty (reguła #8), rodzice widzą wszystko. Zadania otwarte widoczne dla wszystkich dzieci, przyjęte tylko dla wykonawcy.",
+          "acceptanceCriteria": [
+            "Dziecko nie odczyta cudzego portfela",
+            "Rodzic ma pełny dostęp",
+            "Przyjęte zadanie znika z listy innych dzieci (reguła #2)"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E2-S1"]
+        },
+        {
+          "id": "E2-S3",
+          "title": "Seed danych rodziny",
+          "description": "Wstawić 5 osób (Tata, Mama, Hania, Maria, Sonia) z rolami i kolorami oraz 10 szablonów zadań.",
+          "acceptanceCriteria": [
+            "5 osób z poprawnymi rolami i kolorami",
+            "10 szablonów zadań w bazie",
+            "PIN-y zahashowane bcrypt"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E2-S1"]
+        }
+      ]
+    },
+    {
+      "id": "E3",
+      "title": "Autentykacja",
+      "goal": "Logowanie przez wybór osoby i 4-cyfrowy PIN, ochrona tras przez middleware.",
+      "priority": "P0",
+      "stories": [
+        {
+          "id": "E3-S1",
+          "title": "Ekran wyboru osoby (PersonPicker)",
+          "description": "Ekran (auth) z kaflami osób (kolor + imię). Wybór osoby przechodzi do ekranu PIN.",
+          "acceptanceCriteria": [
+            "5 osób wyświetlonych z kolorami",
+            "Klik prowadzi do PinInput dla wybranej osoby",
+            "Mobile-first, max-width 480px"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E2-S3"]
+        },
+        {
+          "id": "E3-S2",
+          "title": "Wprowadzanie PIN (PinInput) + weryfikacja",
+          "description": "Komponent PinInput (4 cyfry) i logika weryfikacji PIN przez bcrypt po stronie serwera. Utworzenie sesji.",
+          "acceptanceCriteria": [
+            "Weryfikacja PIN bcrypt na serwerze",
+            "Błędny PIN → komunikat po polsku",
+            "Poprawny PIN → sesja i przekierowanie wg roli"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E3-S1"]
+        },
+        {
+          "id": "E3-S3",
+          "title": "Hook useAuth + sesja",
+          "description": "Hook useAuth zwracający aktualną osobę, rolę i metody login/logout.",
+          "acceptanceCriteria": [
+            "useAuth zwraca person + role",
+            "logout czyści sesję",
+            "Działa w client components"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E3-S2"]
+        },
+        {
+          "id": "E3-S4",
+          "title": "Middleware ochrony tras",
+          "description": "Middleware Supabase chroniący trasy (child) i (parent) wg roli. Niezalogowani → ekran wyboru osoby.",
+          "acceptanceCriteria": [
+            "Dziecko nie wejdzie do (parent)",
+            "Rodzic nie ma blokady",
+            "Niezalogowany przekierowany do (auth)"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E3-S3"]
+        }
+      ]
+    },
+    {
+      "id": "E4",
+      "title": "Design system i komponenty UI",
+      "goal": "Wspólne komponenty UI, fonty, paleta i nawigacja zgodne z designem.",
+      "priority": "P1",
+      "stories": [
+        {
+          "id": "E4-S1",
+          "title": "Theme Tailwind + fonty",
+          "description": "Skonfigurować paletę (#1a1714, #faf8f5, akcent #00897b) i fonty Syne (display) + DM Sans (body) w Tailwind.",
+          "acceptanceCriteria": [
+            "Kolory dostępne jako klasy Tailwind",
+            "Fonty Syne i DM Sans załadowane (next/font)",
+            "Globalne style tła i tekstu"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E1-S1"]
+        },
+        {
+          "id": "E4-S2",
+          "title": "Komponenty bazowe (Button, Badge, Card)",
+          "description": "Utworzyć src/components/ui: Button, Badge (trudność/status), Card.",
+          "acceptanceCriteria": [
+            "PascalCase, jeden plik = jeden komponent",
+            "Warianty (primary/secondary, trudność)",
+            "Spójne z paletą i fontami"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E4-S1"]
+        },
+        {
+          "id": "E4-S3",
+          "title": "BottomNav (nawigacja dolna)",
+          "description": "Dolna nawigacja zależna od roli: dziecko (zadania, moje, monety, profil), rodzic (panel, dodaj, zatwierdź, statsy).",
+          "acceptanceCriteria": [
+            "Różne zakładki dla dziecka i rodzica",
+            "Aktywna zakładka podświetlona",
+            "Mobile-first"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E4-S2", "E3-S3"]
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "title": "Widok dziecka — zadania",
+      "goal": "Dziecko przegląda, przyjmuje, wykonuje i zgłasza zadania oraz komentuje.",
+      "priority": "P0",
+      "stories": [
+        {
+          "id": "E5-S1",
+          "title": "Lista zadań dziecka",
+          "description": "Widok (child) z listą otwartych zadań. Zadania 'tydzień' na górze (reguła #4). TaskCard z emoji, nazwą, monetami, trudnością, deadline.",
+          "acceptanceCriteria": [
+            "Tylko otwarte zadania (nieprzyjęte przez nikogo) — reguła #2",
+            "Zadania tygodniowe na górze listy",
+            "Hook useTasks z obsługą błędów"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E4-S3", "E2-S2"]
+        },
+        {
+          "id": "E5-S2",
+          "title": "Szczegół zadania + przyjęcie",
+          "description": "TaskDetail z pełnymi informacjami i przyciskiem 'Przyjmij'. Po przyjęciu zadanie przypisane do dziecka i znika z list innych (reguła #2).",
+          "acceptanceCriteria": [
+            "Przyjęcie ustawia executor_id i status",
+            "Zadanie znika z listy innych dzieci (realtime)",
+            "Obsługa konfliktu (ktoś przyjął wcześniej)"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E5-S1"]
+        },
+        {
+          "id": "E5-S3",
+          "title": "Zgłoszenie wykonania (SubmissionForm)",
+          "description": "Formularz zgłoszenia wykonania zadania (opcjonalnie zdjęcie do Supabase Storage). Status → 'zgłoszone', powiadomienie do rodzica.",
+          "acceptanceCriteria": [
+            "Zgłoszenie zmienia status na oczekujące na zatwierdzenie",
+            "Opcjonalny upload zdjęcia do Storage",
+            "Trigger powiadomienia push do rodzica"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E5-S2"]
+        },
+        {
+          "id": "E5-S4",
+          "title": "Komentarze do zadań",
+          "description": "Dziecko może skomentować dlaczego nie wzięło zadania (za mało kasy, za trudne, niejasne, brak czasu). Rodzic dostaje powiadomienie (reguła #10).",
+          "acceptanceCriteria": [
+            "Predefiniowane powody + opcjonalny tekst",
+            "Komentarz zapisany w tabeli comments",
+            "Powiadomienie do rodzica"
+          ],
+          "status": "todo",
+          "priority": "P2",
+          "dependencies": ["E5-S1"]
+        },
+        {
+          "id": "E5-S5",
+          "title": "Widok 'Moje zadania'",
+          "description": "Lista zadań przyjętych przez dziecko z ich statusami (w toku, zgłoszone, zatwierdzone, wygasłe).",
+          "acceptanceCriteria": [
+            "Tylko zadania danego dziecka",
+            "Statusy czytelnie oznaczone (Badge)",
+            "Realtime aktualizacja statusów"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E5-S2"]
+        }
+      ]
+    },
+    {
+      "id": "E6",
+      "title": "Panel rodzica",
+      "goal": "Rodzic tworzy zadania z szablonów, zatwierdza zgłoszenia i widzi statystyki.",
+      "priority": "P0",
+      "stories": [
+        {
+          "id": "E6-S1",
+          "title": "Dashboard rodzica",
+          "description": "Panel (parent) z przeglądem: otwarte zadania, oczekujące zgłoszenia, oczekujące wypłaty, aktywność dzieci.",
+          "acceptanceCriteria": [
+            "Liczniki oczekujących zgłoszeń i wypłat",
+            "Skrót do kluczowych akcji",
+            "Realtime aktualizacja"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E4-S3", "E3-S4"]
+        },
+        {
+          "id": "E6-S2",
+          "title": "Tworzenie zadania z szablonu",
+          "description": "Rodzic wybiera szablon, ustawia deadline (dziś/tydzień). Sprawdzenie duplikatu: jeśli zadanie z tym samym template_id jest otwarte, alert 'czy na pewno?' (reguła #9).",
+          "acceptanceCriteria": [
+            "Wybór z 10 szablonów",
+            "Deadline dziś (23:59) lub tydzień (+7 dni)",
+            "Alert o duplikacie przy istniejącym otwartym zadaniu o tym samym template_id"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E6-S1", "E1-S5"]
+        },
+        {
+          "id": "E6-S3",
+          "title": "Zatwierdzanie zgłoszeń",
+          "description": "Rodzic przegląda zgłoszenia, akceptuje (przyznaje monety do portfela dziecka, transakcja) lub odrzuca. 1 moneta = 1 PLN (reguła #1).",
+          "acceptanceCriteria": [
+            "Akceptacja tworzy transakcję i zwiększa saldo portfela",
+            "Odrzucenie z powodem, powiadomienie do dziecka",
+            "Atomiczność operacji (RPC/transakcja DB)"
+          ],
+          "status": "todo",
+          "priority": "P0",
+          "dependencies": ["E6-S1", "E5-S3"]
+        },
+        {
+          "id": "E6-S4",
+          "title": "Statystyki rodzica",
+          "description": "Widok statystyk: zarobione monety per dziecko, ukończone zadania, średni czas wykonania, ranking.",
+          "acceptanceCriteria": [
+            "Statystyki per dziecko",
+            "Okres czasowy (tydzień/miesiąc)",
+            "Czytelne wykresy/liczby"
+          ],
+          "status": "todo",
+          "priority": "P2",
+          "dependencies": ["E6-S3"]
+        }
+      ]
+    },
+    {
+      "id": "E7",
+      "title": "Portfel i wypłaty",
+      "goal": "Dziecko widzi swoje monety i prosi o wypłatę; rodzic zarządza wypłatami.",
+      "priority": "P1",
+      "stories": [
+        {
+          "id": "E7-S1",
+          "title": "Portfel dziecka (WalletCard + historia)",
+          "description": "Widok monet dziecka: saldo (WalletCard) i historia transakcji (TransactionHistory). Dziecko widzi tylko swoje monety (reguła #8).",
+          "acceptanceCriteria": [
+            "Saldo i historia tylko dla zalogowanego dziecka",
+            "Transakcje z opisem i datą",
+            "Realtime aktualizacja salda"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E6-S3"]
+        },
+        {
+          "id": "E7-S2",
+          "title": "Prośba o wypłatę (WithdrawalForm)",
+          "description": "Dziecko prosi o wypłatę (min. 1 PLN / 1 moneta — reguła #5). Tworzy rekord withdrawal w stanie oczekującym, powiadomienie do rodzica.",
+          "acceptanceCriteria": [
+            "Walidacja minimum 1 moneta",
+            "Nie można przekroczyć salda",
+            "Powiadomienie do rodzica"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E7-S1"]
+        },
+        {
+          "id": "E7-S3",
+          "title": "Zarządzanie wypłatami (rodzic)",
+          "description": "Rodzic widzi prośby o wypłatę, robi przelew ręcznie w Millennium i klika 'Zapłacono' (reguła #6). Saldo dziecka pomniejszone, transakcja.",
+          "acceptanceCriteria": [
+            "Lista oczekujących wypłat",
+            "'Zapłacono' pomniejsza saldo i tworzy transakcję",
+            "Powiadomienie do dziecka o wypłacie"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E7-S2"]
+        }
+      ]
+    },
+    {
+      "id": "E8",
+      "title": "Edge Functions i cron",
+      "goal": "Automatyczne wygasanie zadań oraz wysyłka powiadomień push.",
+      "priority": "P1",
+      "stories": [
+        {
+          "id": "E8-S1",
+          "title": "Cron: wygasanie zadań (expire-tasks)",
+          "description": "Edge Function uruchamiana co minutę. Zadania 'dziś' wygasają o 23:59, 'tydzień' po 7 dniach (reguły #3, #4). Wygasłe zadania zmieniają status.",
+          "acceptanceCriteria": [
+            "Function w supabase/functions/expire-tasks/",
+            "Harmonogram co minutę",
+            "Poprawne wygasanie wg deadline_type"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E2-S1"]
+        },
+        {
+          "id": "E8-S2",
+          "title": "Edge Function: notify-push (FCM)",
+          "description": "Edge Function wysyłająca powiadomienia FCM (zgłoszenie, zatwierdzenie, odrzucenie, komentarz, wypłata).",
+          "acceptanceCriteria": [
+            "Function w supabase/functions/notify-push/",
+            "Integracja z FCM przy użyciu FCM_SERVER_KEY",
+            "Obsługa różnych typów zdarzeń"
+          ],
+          "status": "todo",
+          "priority": "P1",
+          "dependencies": ["E2-S1"]
+        }
+      ]
+    },
+    {
+      "id": "E9",
+      "title": "Push notyfikacje (klient) i PWA",
+      "goal": "Aplikacja instalowalna jako PWA na Androidzie z powiadomieniami push.",
+      "priority": "P2",
+      "stories": [
+        {
+          "id": "E9-S1",
+          "title": "Integracja FCM po stronie klienta",
+          "description": "Rejestracja service workera FCM, pobranie tokenu (NEXT_PUBLIC_FCM_VAPID_KEY), zapis tokenu do bazy per osoba, obsługa odbioru powiadomień.",
+          "acceptanceCriteria": [
+            "Prośba o zgodę na powiadomienia",
+            "Token FCM zapisany w bazie",
+            "Powiadomienia odbierane na Androidzie"
+          ],
+          "status": "todo",
+          "priority": "P2",
+          "dependencies": ["E8-S2", "E3-S3"]
+        },
+        {
+          "id": "E9-S2",
+          "title": "Manifest PWA + ikony",
+          "description": "manifest.json, ikony PWA (różne rozmiary), konfiguracja instalowalności i trybu standalone, max-width 480px.",
+          "acceptanceCriteria": [
+            "Aplikacja instalowalna na Androidzie",
+            "Ikony i splash zgodne z paletą",
+            "Tryb standalone działa jak natywna"
+          ],
+          "status": "todo",
+          "priority": "P2",
+          "dependencies": ["E4-S1"]
+        },
+        {
+          "id": "E9-S3",
+          "title": "Profil osoby",
+          "description": "Widok profilu (zmiana PIN, wylogowanie, ustawienia powiadomień).",
+          "acceptanceCriteria": [
+            "Zmiana PIN (bcrypt)",
+            "Wylogowanie",
+            "Włącz/wyłącz powiadomienia"
+          ],
+          "status": "todo",
+          "priority": "P3",
+          "dependencies": ["E3-S3", "E9-S1"]
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export interface AppUser {
   name: string
   role: UserRole
   avatar_emoji: string
+  color?: string            // akcent osoby (np. turkusowy dla Hani)
   pin_hash: string          // bcrypt hash, never stored in client state
   coin_balance: number
   bank_account_last4?: string  // Millennium Junior account, last 4 digits
