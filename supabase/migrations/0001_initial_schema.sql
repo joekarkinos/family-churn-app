@@ -8,6 +8,8 @@ create table public.app_users (
   name        text not null,
   role        text not null check (role in ('parent', 'child')),
   avatar_emoji text not null default '👤',
+  color       text,                       -- akcent osoby (np. '#00897b')
+  pin_hash    text not null,              -- bcrypt hash 4-cyfrowego PIN-u
   coin_balance integer not null default 0,
   bank_account_encrypted text,  -- encrypted, last 4 stored separately
   bank_account_last4 text,
