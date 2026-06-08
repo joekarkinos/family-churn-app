@@ -3,10 +3,18 @@
   "description": "PWA dla rodziny Karkinosów do zarządzania domowymi obowiązkami. Dzieci przyjmują i wykonują zadania za monety, rodzice tworzą, zatwierdzają i wypłacają.",
   "version": "1.0.0",
   "generatedFrom": "CLAUDE.md",
+  "lastUpdated": "2026-06-08",
   "conventions": {
     "language": "Wszystkie statusy: todo | in_progress | review | done | blocked",
     "priority": "P0 (krytyczne) > P1 (wysokie) > P2 (średnie) > P3 (niskie)",
     "idScheme": "Epic: E<n> | Story: E<n>-S<m>"
+  },
+  "progressSummary": {
+    "stories": { "total": 32, "done": 26, "in_progress": 4, "todo": 2 },
+    "branch": "feat/auth-and-core",
+    "pullRequest": "https://github.com/joekarkinos/family-churn-app/pull/1",
+    "verified": ["npm run type-check", "npm run lint", "npm run build"],
+    "notes": "E1–E7 zaimplementowane i w PR. Odłożone przekrojowo: powiadomienia push (E8), Realtime, upload zdjęć do Storage. E8/E9 częściowo lub do zrobienia."
   },
   "epics": [
     {
@@ -14,6 +22,7 @@
       "title": "Fundament projektu",
       "goal": "Działający szkielet aplikacji Next.js z TypeScript, Tailwind, Supabase i konfiguracją środowiska.",
       "priority": "P0",
+      "status": "done",
       "stories": [
         {
           "id": "E1-S1",
@@ -24,7 +33,7 @@
             "Tailwind działa (test klasą utility)",
             "Struktura src/app, src/components, src/lib, src/types, src/hooks istnieje"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
           "dependencies": []
         },
@@ -37,9 +46,10 @@
             ".env.local w .gitignore",
             "Brak sekretów w repo"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E1-S1"]
+          "dependencies": ["E1-S1"],
+          "note": "Dodano też AUTH_DERIVE_SECRET (model 'PIN bramkuje Supabase Auth')."
         },
         {
           "id": "E1-S3",
@@ -50,9 +60,10 @@
             "createServerClient dla Server Components z obsługą cookies",
             "Typowanie zgodne z wygenerowanym schematem DB"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E1-S2"]
+          "dependencies": ["E1-S2"],
+          "note": "Dodano też admin.ts (service_role). Typy DB nie są generowane (gen types) — zapytania nietypowane względem schematu; do rozważenia później."
         },
         {
           "id": "E1-S4",
@@ -63,7 +74,7 @@
             "Typy odzwierciedlają reguły biznesowe (np. status zadania)",
             "Brak any tam gdzie typ jest znany"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
           "dependencies": ["E1-S1"]
         },
@@ -76,7 +87,7 @@
             "Wartości monet i trudności zgodne z CLAUDE.md",
             "Typowane jako TaskTemplate[]"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
           "dependencies": ["E1-S4"]
         }
@@ -87,6 +98,7 @@
       "title": "Baza danych i schemat",
       "goal": "Kompletny schemat PostgreSQL w Supabase z migracjami, RLS i danymi początkowymi.",
       "priority": "P0",
+      "status": "done",
       "stories": [
         {
           "id": "E2-S1",
@@ -97,9 +109,10 @@
             "Enumy/check constraints dla statusów i ról",
             "Migracja w supabase/migrations/"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E1-S3"]
+          "dependencies": ["E1-S3"],
+          "note": "0001_initial_schema.sql. Osoby = app_users (extends auth.users); dodano pin_hash + color. Dodano też 0003_rpc_functions.sql (atomowe operacje)."
         },
         {
           "id": "E2-S2",
@@ -110,9 +123,10 @@
             "Rodzic ma pełny dostęp",
             "Przyjęte zadanie znika z listy innych dzieci (reguła #2)"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E2-S1"]
+          "dependencies": ["E2-S1"],
+          "note": "0002_rls_policies.sql + helper is_parent(). RLS oparte o auth.uid() (model PIN-bramkuje-Auth)."
         },
         {
           "id": "E2-S3",
@@ -123,9 +137,10 @@
             "10 szablonów zadań w bazie",
             "PIN-y zahashowane bcrypt"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E2-S1"]
+          "dependencies": ["E2-S1"],
+          "note": "Szablony: 0004_seed_templates.sql (idempotentne). Rodzina: scripts/seed-family.ts (Auth users + bcrypt PIN). Deliverables gotowe; skrypt należy URUCHOMIĆ na żywej bazie — to krok wdrożeniowy (patrz DEPLOYMENT.md)."
         }
       ]
     },
@@ -134,6 +149,7 @@
       "title": "Autentykacja",
       "goal": "Logowanie przez wybór osoby i 4-cyfrowy PIN, ochrona tras przez middleware.",
       "priority": "P0",
+      "status": "done",
       "stories": [
         {
           "id": "E3-S1",
@@ -144,7 +160,7 @@
             "Klik prowadzi do PinInput dla wybranej osoby",
             "Mobile-first, max-width 480px"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
           "dependencies": ["E2-S3"]
         },
@@ -157,9 +173,10 @@
             "Błędny PIN → komunikat po polsku",
             "Poprawny PIN → sesja i przekierowanie wg roli"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E3-S1"]
+          "dependencies": ["E3-S1"],
+          "note": "loginWithPin: bcrypt.compare → signInWithPassword z wyprowadzonym ukrytym hasłem (prawdziwa sesja Supabase)."
         },
         {
           "id": "E3-S3",
@@ -170,9 +187,10 @@
             "logout czyści sesję",
             "Działa w client components"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E3-S2"]
+          "dependencies": ["E3-S2"],
+          "note": "useAuth (client) + lib/auth/session.ts (getCurrentUser/requireUser dla SSR) + logout action."
         },
         {
           "id": "E3-S4",
@@ -183,9 +201,10 @@
             "Rodzic nie ma blokady",
             "Niezalogowany przekierowany do (auth)"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E3-S3"]
+          "dependencies": ["E3-S3"],
+          "note": "src/middleware.ts — odświeżanie sesji + kontrola roli; dodatkowo requireUser() w layoutach grup."
         }
       ]
     },
@@ -194,6 +213,7 @@
       "title": "Design system i komponenty UI",
       "goal": "Wspólne komponenty UI, fonty, paleta i nawigacja zgodne z designem.",
       "priority": "P1",
+      "status": "done",
       "stories": [
         {
           "id": "E4-S1",
@@ -204,9 +224,10 @@
             "Fonty Syne i DM Sans załadowane (next/font)",
             "Globalne style tła i tekstu"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E1-S1"]
+          "dependencies": ["E1-S1"],
+          "note": "Fonty przez next/font/google (zmienne CSS), themeColor przeniesiony do viewport export."
         },
         {
           "id": "E4-S2",
@@ -217,9 +238,10 @@
             "Warianty (primary/secondary, trudność)",
             "Spójne z paletą i fontami"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E4-S1"]
+          "dependencies": ["E4-S1"],
+          "note": "Button, Card, Badge (+ DifficultyBadge/StatusBadge/CoinBadge), util cn()."
         },
         {
           "id": "E4-S3",
@@ -230,7 +252,7 @@
             "Aktywna zakładka podświetlona",
             "Mobile-first"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
           "dependencies": ["E4-S2", "E3-S3"]
         }
@@ -241,6 +263,7 @@
       "title": "Widok dziecka — zadania",
       "goal": "Dziecko przegląda, przyjmuje, wykonuje i zgłasza zadania oraz komentuje.",
       "priority": "P0",
+      "status": "done",
       "stories": [
         {
           "id": "E5-S1",
@@ -251,9 +274,10 @@
             "Zadania tygodniowe na górze listy",
             "Hook useTasks z obsługą błędów"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E4-S3", "E2-S2"]
+          "dependencies": ["E4-S3", "E2-S2"],
+          "note": "Dane pobierane w Server Component (z sortowaniem tydzień-na-górze) zamiast osobnego hooka useTasks; obsługa błędów na miejscu."
         },
         {
           "id": "E5-S2",
@@ -264,9 +288,10 @@
             "Zadanie znika z listy innych dzieci (realtime)",
             "Obsługa konfliktu (ktoś przyjął wcześniej)"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E5-S1"]
+          "dependencies": ["E5-S1"],
+          "note": "Przyjęcie przez atomowe RPC claim_task (obsługa wyścigu/konfliktu). Znika z listy po odświeżeniu (revalidatePath) — bez Supabase Realtime."
         },
         {
           "id": "E5-S3",
@@ -277,9 +302,10 @@
             "Opcjonalny upload zdjęcia do Storage",
             "Trigger powiadomienia push do rodzica"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E5-S2"]
+          "dependencies": ["E5-S2"],
+          "note": "Formularz + notatka + zmiana statusu na in_review działają. ODŁOŻONE: upload zdjęcia do Storage oraz push do rodzica (zależą od Storage i E8)."
         },
         {
           "id": "E5-S4",
@@ -290,9 +316,10 @@
             "Komentarz zapisany w tabeli comments",
             "Powiadomienie do rodzica"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P2",
-          "dependencies": ["E5-S1"]
+          "dependencies": ["E5-S1"],
+          "note": "Powody + zapis do task_comments gotowe. ODŁOŻONE: powiadomienie push do rodzica (E8)."
         },
         {
           "id": "E5-S5",
@@ -303,9 +330,10 @@
             "Statusy czytelnie oznaczone (Badge)",
             "Realtime aktualizacja statusów"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E5-S2"]
+          "dependencies": ["E5-S2"],
+          "note": "Bez Realtime — statusy odświeżane przez revalidatePath/router.refresh."
         }
       ]
     },
@@ -314,6 +342,7 @@
       "title": "Panel rodzica",
       "goal": "Rodzic tworzy zadania z szablonów, zatwierdza zgłoszenia i widzi statystyki.",
       "priority": "P0",
+      "status": "in_progress",
       "stories": [
         {
           "id": "E6-S1",
@@ -324,9 +353,10 @@
             "Skrót do kluczowych akcji",
             "Realtime aktualizacja"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E4-S3", "E3-S4"]
+          "dependencies": ["E4-S3", "E3-S4"],
+          "note": "Liczniki (do sprawdzenia/wypłaty/otwarte) + salda dzieci + skróty. Bez Realtime (odświeżanie przy wejściu)."
         },
         {
           "id": "E6-S2",
@@ -337,9 +367,10 @@
             "Deadline dziś (23:59) lub tydzień (+7 dni)",
             "Alert o duplikacie przy istniejącym otwartym zadaniu o tym samym template_id"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E6-S1", "E1-S5"]
+          "dependencies": ["E6-S1", "E1-S5"],
+          "note": "CreateTaskPicker + checkDuplicate/createTaskFromTemplate(force). Alert duplikatu z potwierdzeniem (reguła #9)."
         },
         {
           "id": "E6-S3",
@@ -350,9 +381,10 @@
             "Odrzucenie z powodem, powiadomienie do dziecka",
             "Atomiczność operacji (RPC/transakcja DB)"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P0",
-          "dependencies": ["E6-S1", "E5-S3"]
+          "dependencies": ["E6-S1", "E5-S3"],
+          "note": "Atomowe RPC approve_submission (reward+bonus, transakcja, saldo) / reject_submission. ODŁOŻONE: powiadomienie push do dziecka (E8)."
         },
         {
           "id": "E6-S4",
@@ -363,9 +395,10 @@
             "Okres czasowy (tydzień/miesiąc)",
             "Czytelne wykresy/liczby"
           ],
-          "status": "todo",
+          "status": "in_progress",
           "priority": "P2",
-          "dependencies": ["E6-S3"]
+          "dependencies": ["E6-S3"],
+          "note": "GOTOWE: ranking zarobionych monet + liczba ukończonych zadań + paski. DO ZROBIENIA: filtr okresu (tydzień/miesiąc) oraz średni czas wykonania."
         }
       ]
     },
@@ -374,6 +407,7 @@
       "title": "Portfel i wypłaty",
       "goal": "Dziecko widzi swoje monety i prosi o wypłatę; rodzic zarządza wypłatami.",
       "priority": "P1",
+      "status": "done",
       "stories": [
         {
           "id": "E7-S1",
@@ -384,9 +418,10 @@
             "Transakcje z opisem i datą",
             "Realtime aktualizacja salda"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E6-S3"]
+          "dependencies": ["E6-S3"],
+          "note": "WalletCard + TransactionHistory; widoczność wymuszona RLS. Bez Realtime salda (odświeżanie przy wejściu/akcji)."
         },
         {
           "id": "E7-S2",
@@ -397,9 +432,10 @@
             "Nie można przekroczyć salda",
             "Powiadomienie do rodzica"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E7-S1"]
+          "dependencies": ["E7-S1"],
+          "note": "RPC request_withdrawal (min 1, nie więcej niż saldo) + walidacja w formularzu. ODŁOŻONE: push do rodzica (E8)."
         },
         {
           "id": "E7-S3",
@@ -410,9 +446,10 @@
             "'Zapłacono' pomniejsza saldo i tworzy transakcję",
             "Powiadomienie do dziecka o wypłacie"
           ],
-          "status": "todo",
+          "status": "done",
           "priority": "P1",
-          "dependencies": ["E7-S2"]
+          "dependencies": ["E7-S2"],
+          "note": "Lista oczekujących + RPC mark_withdrawal_paid (atomowo: status, transakcja ujemna, saldo). ODŁOŻONE: push do dziecka (E8)."
         }
       ]
     },
@@ -421,6 +458,7 @@
       "title": "Edge Functions i cron",
       "goal": "Automatyczne wygasanie zadań oraz wysyłka powiadomień push.",
       "priority": "P1",
+      "status": "in_progress",
       "stories": [
         {
           "id": "E8-S1",
@@ -431,9 +469,10 @@
             "Harmonogram co minutę",
             "Poprawne wygasanie wg deadline_type"
           ],
-          "status": "todo",
+          "status": "in_progress",
           "priority": "P1",
-          "dependencies": ["E2-S1"]
+          "dependencies": ["E2-S1"],
+          "note": "Kod funkcji istnieje (oznacza zadania past-deadline jako expired). DO ZROBIENIA: deploy funkcji + harmonogram cron (pg_cron) + integracja push (TODO w kodzie)."
         },
         {
           "id": "E8-S2",
@@ -446,7 +485,8 @@
           ],
           "status": "todo",
           "priority": "P1",
-          "dependencies": ["E2-S1"]
+          "dependencies": ["E2-S1"],
+          "note": "Katalog supabase/functions/notify-push/ jest pustym placeholderem — brak kodu."
         }
       ]
     },
@@ -455,6 +495,7 @@
       "title": "Push notyfikacje (klient) i PWA",
       "goal": "Aplikacja instalowalna jako PWA na Androidzie z powiadomieniami push.",
       "priority": "P2",
+      "status": "in_progress",
       "stories": [
         {
           "id": "E9-S1",
@@ -467,7 +508,8 @@
           ],
           "status": "todo",
           "priority": "P2",
-          "dependencies": ["E8-S2", "E3-S3"]
+          "dependencies": ["E8-S2", "E3-S3"],
+          "note": "Niezrealizowane. Wymaga też kolumny na token FCM w app_users (migracja) i Firebase (patrz DEPLOYMENT.md krok 7)."
         },
         {
           "id": "E9-S2",
@@ -478,9 +520,10 @@
             "Ikony i splash zgodne z paletą",
             "Tryb standalone działa jak natywna"
           ],
-          "status": "todo",
+          "status": "in_progress",
           "priority": "P2",
-          "dependencies": ["E4-S1"]
+          "dependencies": ["E4-S1"],
+          "note": "GOTOWE: public/manifest.json (display standalone) + metadane w layout. DO ZROBIENIA: pliki ikon /icons/icon-192.png i icon-512.png (są tylko referencje) oraz service worker."
         },
         {
           "id": "E9-S3",
@@ -491,9 +534,10 @@
             "Wylogowanie",
             "Włącz/wyłącz powiadomienia"
           ],
-          "status": "todo",
+          "status": "in_progress",
           "priority": "P3",
-          "dependencies": ["E3-S3", "E9-S1"]
+          "dependencies": ["E3-S3", "E9-S1"],
+          "note": "GOTOWE: strona /profil + wylogowanie (LogoutButton). DO ZROBIENIA: zmiana PIN (bcrypt) i ustawienia powiadomień."
         }
       ]
     }
