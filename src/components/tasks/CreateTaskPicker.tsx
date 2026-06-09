@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { DifficultyBadge, CoinBadge } from '@/components/ui/Badge'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { createTaskFromTemplate } from '@/app/(parent)/actions'
 import { TASK_TEMPLATES } from '@/lib/templates'
 import type { DeadlineType, TaskTemplate } from '@/types'
@@ -58,6 +59,7 @@ export function CreateTaskPicker() {
   if (selected) {
     return (
       <div className="flex flex-col gap-4">
+        <LoadingOverlay show={pending} />
         <button onClick={() => setSelected(null)} className="self-start text-sm text-ink-3">
           ← Wybierz inne
         </button>

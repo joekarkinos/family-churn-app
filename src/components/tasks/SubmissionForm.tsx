@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { submitTask } from '@/app/(child)/actions'
 
 // Formularz zgłoszenia wykonania zadania (opcjonalna notatka).
@@ -37,6 +38,7 @@ export function SubmissionForm({ taskId }: { taskId: string }) {
 
   return (
     <div className="mt-2 flex flex-col gap-2 rounded-app border border-border bg-white p-3">
+      <LoadingOverlay show={pending} />
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}

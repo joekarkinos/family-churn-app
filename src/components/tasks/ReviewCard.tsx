@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { CoinBadge } from '@/components/ui/Badge'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { formatDate } from '@/lib/format'
 import { approveSubmission, rejectSubmission } from '@/app/(parent)/actions'
 
@@ -53,6 +54,7 @@ export function ReviewCard({ review }: { review: PendingReview }) {
 
   return (
     <Card className="flex flex-col gap-3">
+      <LoadingOverlay show={pending} />
       <div className="flex items-start gap-3">
         <span className="text-3xl">{review.taskEmoji}</span>
         <div className="min-w-0 flex-1">

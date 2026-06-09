@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { formatDate } from '@/lib/format'
 import { markWithdrawalPaid } from '@/app/(parent)/actions'
 
@@ -35,6 +36,7 @@ export function WithdrawalManageCard({ withdrawal }: { withdrawal: PendingWithdr
 
   return (
     <Card className="flex items-center justify-between gap-3">
+      <LoadingOverlay show={pending} />
       <div>
         <p className="font-medium text-ink">
           {withdrawal.childEmoji} {withdrawal.childName}

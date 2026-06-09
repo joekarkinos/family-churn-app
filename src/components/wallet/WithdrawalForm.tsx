@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { requestWithdrawal } from '@/app/(child)/actions'
 
 // Prośba o wypłatę (reguła #5: min 1 moneta, nie więcej niż saldo).
@@ -36,6 +37,7 @@ export function WithdrawalForm({ balance }: { balance: number }) {
 
   return (
     <div className="flex items-end gap-2">
+      <LoadingOverlay show={pending} />
       <label className="flex-1">
         <span className="mb-1 block text-sm text-ink-2">Ile monet wypłacić?</span>
         <input

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { PinInput } from './PinInput'
 import { loginWithPin, type FamilyMember } from '@/app/(auth)/actions'
 
@@ -30,6 +31,7 @@ export function PersonPicker({ members }: { members: FamilyMember[] }) {
   if (selected) {
     return (
       <div className="flex flex-col items-center gap-6">
+        <LoadingOverlay show={pending} />
         <button
           onClick={() => {
             setSelected(null)

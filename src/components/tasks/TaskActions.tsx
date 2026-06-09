@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { claimTask, commentTask } from '@/app/(child)/actions'
 import type { CommentReason, TaskStatus } from '@/types'
 
@@ -55,6 +56,7 @@ export function TaskActions({ taskId, status }: { taskId: string; status: TaskSt
 
   return (
     <div className="flex flex-col gap-3">
+      <LoadingOverlay show={pending} />
       <Button size="lg" fullWidth onClick={handleClaim} disabled={pending}>
         Przyjmij zadanie
       </Button>
