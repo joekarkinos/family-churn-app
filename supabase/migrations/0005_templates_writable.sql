@@ -5,6 +5,10 @@
 -- odłącz szablon).
 -- ─────────────────────────────────────────────────────────────────
 
+-- RLS na task_templates nie była włączona w 0001 — włączamy teraz,
+-- inaczej polityki (także SELECT z 0002) są bezczynne.
+alter table public.task_templates enable row level security;
+
 -- Zapis szablonów: tylko rodzic (select pozostaje z migracji 0002).
 create policy "templates insert by parent"
   on public.task_templates for insert
