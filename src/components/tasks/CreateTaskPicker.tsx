@@ -8,10 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { DifficultyBadge, CoinBadge } from '@/components/ui/Badge'
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { createTaskFromTemplate } from '@/app/(parent)/actions'
-import { TASK_TEMPLATES } from '@/lib/templates'
 import type { DeadlineType, TaskTemplate } from '@/types'
 
-export function CreateTaskPicker() {
+export function CreateTaskPicker({ templates }: { templates: TaskTemplate[] }) {
   const router = useRouter()
   const [selected, setSelected] = useState<TaskTemplate | null>(null)
   const [deadline, setDeadline] = useState<DeadlineType>('end_of_day')
@@ -96,7 +95,7 @@ export function CreateTaskPicker() {
 
   return (
     <div className="flex flex-col gap-2">
-      {TASK_TEMPLATES.map((t) => (
+      {templates.map((t) => (
         <Card key={t.id} interactive onClick={() => setSelected(t)} className="flex items-center gap-3">
           <span className="text-3xl">{t.emoji}</span>
           <div className="min-w-0 flex-1">
