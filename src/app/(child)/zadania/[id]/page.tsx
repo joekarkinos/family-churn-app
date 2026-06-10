@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/session'
 import { DifficultyBadge, CoinBadge } from '@/components/ui/Badge'
 import { formatDeadline } from '@/lib/format'
-import { TASK_TEMPLATES } from '@/lib/templates'
+import { getTemplate } from '@/lib/templates-db'
 import { TaskActions } from '@/components/tasks/TaskActions'
 import type { Task } from '@/types'
 
@@ -18,9 +18,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   const task = data as Task
 
   const deadline = formatDeadline(task.expires_at)
-  const template = task.template_id
-    ? TASK_TEMPLATES.find((t) => t.id === task.template_id)
-    : undefined
+  const template = task.template_id ? await getTemplate(task.template_id) : null
 
   return (
     <main className="px-4 pt-6">

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { TASK_TEMPLATES } from '@/lib/templates'
+import { getTemplate } from '@/lib/templates-db'
 import type { DeadlineType, TaskDifficulty } from '@/types'
 import type { TemplateInput } from '@/lib/templates'
 
@@ -41,7 +41,7 @@ export async function createTaskFromTemplate(
   deadline: DeadlineType,
   force = false
 ): Promise<ActionResult & { duplicate?: boolean }> {
-  const template = TASK_TEMPLATES.find((t) => t.id === templateId)
+  const template = await getTemplate(templateId)
   if (!template) return { ok: false, error: 'Nieznany szablon' }
 
   if (!force && (await checkDuplicate(templateId))) {
