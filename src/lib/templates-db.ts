@@ -25,7 +25,7 @@ export async function getTemplate(id: string): Promise<TaskTemplate | null> {
     .from('task_templates')
     .select('id, title, description, emoji, default_coins, default_difficulty, suggested_checklist, room')
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
   if (error || !data) return null
   return data as TaskTemplate

@@ -62,12 +62,12 @@ export interface Submission {
 export interface TaskTemplate {
   id: string
   title: string
-  description: string
+  description: string | null     // kolumna nullable w bazie
   emoji: string
   default_coins: number
   default_difficulty: TaskDifficulty
   suggested_checklist: string[]  // lista kroków
-  room?: string                  // np. "salon", "lazienka_taty"
+  room: string | null            // np. "salon", "lazienka_taty"; nullable w bazie
 }
 
 // ─── Comments (dlaczego nikt nie wziął) ─────────────────────────────────────
