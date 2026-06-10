@@ -142,6 +142,9 @@ function validateTemplate(
     return { ok: false, error: 'Nieprawidłowy poziom trudności' }
   }
 
+  if (input.suggested_checklist != null && !Array.isArray(input.suggested_checklist)) {
+    return { ok: false, error: 'Lista kroków ma nieprawidłowy format' }
+  }
   const checklist = (input.suggested_checklist ?? [])
     .map((s) => s.trim())
     .filter((s) => s.length > 0)
