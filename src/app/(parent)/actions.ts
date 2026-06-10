@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { TASK_TEMPLATES } from '@/lib/templates'
-import type { DeadlineType } from '@/types'
+import type { DeadlineType, TaskDifficulty } from '@/types'
+import type { TemplateInput } from '@/lib/templates'
 
 export type ActionResult = { ok: true } | { ok: false; error: string }
 
@@ -119,5 +120,105 @@ export async function markWithdrawalPaid(
   if (error) return { ok: false, error: error.message }
   revalidatePath('/wyplaty')
   revalidatePath('/panel')
+  return { ok: true }
+}
+
+// ─── Szablony zadań (CRUD, tylko rodzic) ───────────────────────────
+
+const DIFFICULTIES: TaskDifficulty[] = ['easy', 'medium', 'hard']
+
+// Walidacja wspólna dla create/update. Zwraca oczyszczone dane lub błąd.
+function validateTemplate(
+  input: TemplateInput
+): { ok: true; value: TemplateInput } | { ok: false; error: string } {
+  const title = input.title?.trim() ?? ''
+  if (!title) return { ok: false, error: 'Tytuł nie może być pusty' }
+
+  if (!Number.isInteger(input.default_coins) || input.default_coins < 1) {
+    return { ok: false, error: 'Nagroda musi być liczbą całkowitą ≥ 1' }
+  }
+
+  if (!DIFFICULTIES.includes(input.default_difficulty)) {
+    return { ok: false, error: 'Nieprawidłowy poziom trudności' }
+  }
+
+  const checklist = (input.suggested_checklist ?? [])
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+
+  const room = input.room?.trim() || null
+  const emoji = input.emoji?.trim() || '📋'
+
+  return {
+    ok: true,
+    value: {
+      title,
+      description: input.description?.trim() ?? '',
+      emoji,
+      default_coins: input.default_coins,
+      default_difficulty: input.default_difficulty,
+      suggested_checklist: checklist,
+      room,
+    },
+  }
+}
+
+export async function createTemplate(input: TemplateInput): Promise<ActionResult> {
+  const v = validateTemplate(input)
+  if (!v.ok) return { ok: false, error: v.error }
+
+  const supabase = await createClient()
+  const id = crypto.randomUUID()
+  const { error } = await supabase.from('task_templates').insert({
+    id,
+    title: v.value.title,
+    description: v.value.description,
+    emoji: v.value.emoji,
+    default_coins: v.value.default_coins,
+    default_difficulty: v.value.default_difficulty,
+    suggested_checklist: v.value.suggested_checklist,
+    room: v.value.room,
+  })
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/szablony')
+  revalidatePath('/dodaj')
+  return { ok: true }
+}
+
+export async function updateTemplate(id: string, input: TemplateInput): Promise<ActionResult> {
+  if (!id) return { ok: false, error: 'Brak identyfikatora szablonu' }
+  const v = validateTemplate(input)
+  if (!v.ok) return { ok: false, error: v.error }
+
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('task_templates')
+    .update({
+      title: v.value.title,
+      description: v.value.description,
+      emoji: v.value.emoji,
+      default_coins: v.value.default_coins,
+      default_difficulty: v.value.default_difficulty,
+      suggested_checklist: v.value.suggested_checklist,
+      room: v.value.room,
+    })
+    .eq('id', id)
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/szablony')
+  revalidatePath('/dodaj')
+  return { ok: true }
+}
+
+export async function deleteTemplate(id: string): Promise<ActionResult> {
+  if (!id) return { ok: false, error: 'Brak identyfikatora szablonu' }
+
+  const supabase = await createClient()
+  const { error } = await supabase.from('task_templates').delete().eq('id', id)
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/szablony')
+  revalidatePath('/dodaj')
   return { ok: true }
 }
