@@ -83,7 +83,7 @@ export function TemplateManager({ templates }: { templates: TaskTemplate[] }) {
     toast(
       (to) => (
         <span className="flex flex-col gap-2">
-          <span>Usunąć szablon „{t.title}"? Istniejące zadania zostaną.</span>
+          <span>Usunąć szablon „{t.title}”? Istniejące zadania zostaną.</span>
           <span className="flex gap-2">
             <button
               className="rounded bg-red-500 px-3 py-1 text-white"
