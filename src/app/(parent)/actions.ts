@@ -73,6 +73,34 @@ export async function createTaskFromTemplate(
   return { ok: true }
 }
 
+// Reaktywacja wygasłego zadania: nowy termin (ten sam typ), wraca do puli otwartych.
+// Czyścimy claimed_by/claimed_at — reguła #2 (1 zadanie = 1 wykonawca).
+export async function reactivateTask(taskId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+
+  const { data: task, error: fetchErr } = await supabase
+    .from('tasks')
+    .select('deadline_type')
+    .eq('id', taskId)
+    .single()
+  if (fetchErr || !task) return { ok: false, error: 'Zadanie nie istnieje' }
+
+  const { error } = await supabase
+    .from('tasks')
+    .update({
+      status: 'open',
+      expires_at: computeExpiry(task.deadline_type as DeadlineType),
+      claimed_by: null,
+      claimed_at: null,
+    })
+    .eq('id', taskId)
+
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/zadania')
+  revalidatePath('/panel')
+  return { ok: true }
+}
+
 // Zatwierdzenie zgłoszenia → atomowe przyznanie monet (RPC).
 export async function approveSubmission(
   submissionId: string,
