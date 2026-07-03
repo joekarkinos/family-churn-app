@@ -38,7 +38,7 @@ export function TaskCard({ task, href, showStatus, canReactivate }: TaskCardProp
           >
             {deadline.text}
           </span>
-          {canReactivate && isExpired && <ReactivateButton taskId={task.id} />}
+          {canReactivate && !href && isExpired && <ReactivateButton taskId={task.id} />}
         </div>
       </div>
     </Card>

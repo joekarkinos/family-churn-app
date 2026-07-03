@@ -85,7 +85,9 @@ export async function reactivateTask(taskId: string): Promise<ActionResult> {
     .single()
   if (fetchErr || !task) return { ok: false, error: 'Zadanie nie istnieje' }
 
-  const { error } = await supabase
+  // .select() zwraca zaktualizowane wiersze — brak wierszy (np. blokada RLS
+  // albo zadanie zniknęło) traktujemy jako błąd, żeby nie pokazać fałszywego sukcesu.
+  const { data: updated, error } = await supabase
     .from('tasks')
     .update({
       status: 'open',
@@ -94,8 +96,12 @@ export async function reactivateTask(taskId: string): Promise<ActionResult> {
       claimed_at: null,
     })
     .eq('id', taskId)
+    .select('id')
 
   if (error) return { ok: false, error: error.message }
+  if (!updated || updated.length === 0) {
+    return { ok: false, error: 'Nie udało się reaktywować zadania' }
+  }
   revalidatePath('/zadania')
   revalidatePath('/panel')
   return { ok: true }
