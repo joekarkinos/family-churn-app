@@ -41,7 +41,7 @@ export default async function PanelPage() {
       <div className="grid grid-cols-3 gap-3">
         <StatTile href="/zatwierdz" value={pendingReviews} label="Do sprawdzenia" highlight={pendingReviews > 0} />
         <StatTile href="/wyplaty" value={pendingWithdrawals} label="Wypłaty" highlight={pendingWithdrawals > 0} />
-        <StatTile href="/zadania" value={openTasks} label="Otwarte" />
+        <StatTile href="/zadania-rodzic" value={openTasks} label="Otwarte" />
       </div>
 
       <section>

@@ -102,7 +102,8 @@ export async function reactivateTask(taskId: string): Promise<ActionResult> {
   if (!updated || updated.length === 0) {
     return { ok: false, error: 'Nie udało się reaktywować zadania' }
   }
-  revalidatePath('/zadania')
+  revalidatePath('/zadania-rodzic') // lista rodzica
+  revalidatePath('/zadania') // reaktywowane zadanie wraca też do puli dziecka
   revalidatePath('/panel')
   return { ok: true }
 }

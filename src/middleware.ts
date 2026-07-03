@@ -5,7 +5,7 @@ type CookieToSet = { name: string; value: string; options: CookieOptions }
 
 // Trasy dzieci i rodziców (route groups (child) / (parent) nie pojawiają się w URL).
 const CHILD_PATHS = ['/zadania', '/moje-zadania', '/monety', '/profil']
-const PARENT_PATHS = ['/panel', '/dodaj', '/zatwierdz', '/wyplaty', '/statystyki']
+const PARENT_PATHS = ['/panel', '/dodaj', '/zatwierdz', '/wyplaty', '/statystyki', '/zadania-rodzic']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
