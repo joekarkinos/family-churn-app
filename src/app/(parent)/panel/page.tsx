@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/Card'
 import { loadDutyView } from '@/lib/duty/queries'
 import { DutyBanner } from '@/components/duty/DutyBanner'
 import { DutyWeek } from '@/components/duty/DutyWeek'
+import { Avatar } from '@/components/ui/Avatar'
+import { AvatarUploader } from '@/components/profile/AvatarUploader'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,7 +32,7 @@ export default async function PanelPage() {
 
   const { data: children } = await supabase
     .from('app_users')
-    .select('id, name, avatar_emoji, color, coin_balance')
+    .select('id, name, avatar_emoji, color, coin_balance, avatar_url')
     .eq('role', 'child')
     .order('name')
 
@@ -42,6 +44,14 @@ export default async function PanelPage() {
         <p className="text-sm text-ink-3">Cześć, {user.name} {user.avatar_emoji}</p>
         <h1 className="font-display text-2xl font-bold text-ink">Panel rodzica</h1>
       </header>
+
+      <Card className="flex items-center justify-between py-3">
+        <div className="flex items-center gap-3">
+          <Avatar url={user.avatar_url} emoji={user.avatar_emoji} color={user.color} size={40} alt={user.name} />
+          <span className="font-medium text-ink">{user.name}</span>
+        </div>
+        <AvatarUploader targetUserId={user.id} label="Zmień moje zdjęcie" />
+      </Card>
 
       {duty && (
         <div>
@@ -65,13 +75,11 @@ export default async function PanelPage() {
           {(children ?? []).map((c) => (
             <Card key={c.id} className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <span
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-xl"
-                  style={{ backgroundColor: (c.color ?? '#00897b') + '22' }}
-                >
-                  {c.avatar_emoji}
-                </span>
-                <span className="font-medium text-ink">{c.name}</span>
+                <Avatar url={c.avatar_url} emoji={c.avatar_emoji} color={c.color} size={40} alt={c.name} />
+                <div className="flex flex-col">
+                  <span className="font-medium text-ink">{c.name}</span>
+                  <AvatarUploader targetUserId={c.id} label="Zmień zdjęcie" />
+                </div>
               </div>
               <span className="font-display font-semibold text-ink">{c.coin_balance} 🪙</span>
             </Card>
