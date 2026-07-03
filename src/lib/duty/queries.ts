@@ -66,17 +66,30 @@ export async function loadDutyView(): Promise<DutyView | null> {
   const todayDutyId = effectiveDutyChildId(today, rotation, overrides)
   const todayRequest = pending[0]
 
-  const banner = computeBanner(user.id, todayDutyId, todayRequest, children)
+  const banner = computeBanner(user.id, user.role, todayDutyId, todayRequest, children)
 
   return { today, currentUserId: user.id, children, calendar, banner }
 }
 
 function computeBanner(
   userId: string,
+  role: 'parent' | 'child',
   todayDutyId: string | null,
   request: DutySwapRequest | undefined,
   children: DutyView['children']
 ): DutyBannerState {
+  // Rodzic nie pełni dyżurów — zawsze widok informacyjny (kto dziś dyżuruje).
+  if (role === 'parent') {
+    if (todayDutyId && children[todayDutyId]) {
+      return {
+        kind: 'info',
+        childName: children[todayDutyId].name,
+        childEmoji: children[todayDutyId].avatar_emoji,
+      }
+    }
+    return { kind: 'none' }
+  }
+
   const iAmOnDuty = todayDutyId === userId
 
   if (iAmOnDuty) {

@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/session'
 import { Card } from '@/components/ui/Card'
+import { loadDutyView } from '@/lib/duty/queries'
+import { DutyBanner } from '@/components/duty/DutyBanner'
+import { DutyWeek } from '@/components/duty/DutyWeek'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,12 +34,21 @@ export default async function PanelPage() {
     .eq('role', 'child')
     .order('name')
 
+  const duty = await loadDutyView()
+
   return (
     <main className="flex flex-col gap-5 px-4 pt-6">
       <header>
         <p className="text-sm text-ink-3">Cześć, {user.name} {user.avatar_emoji}</p>
         <h1 className="font-display text-2xl font-bold text-ink">Panel rodzica</h1>
       </header>
+
+      {duty && (
+        <div>
+          <DutyBanner state={duty.banner} today={duty.today} />
+          <DutyWeek calendar={duty.calendar} people={duty.children} today={duty.today} />
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-3">
         <StatTile href="/zatwierdz" value={pendingReviews} label="Do sprawdzenia" highlight={pendingReviews > 0} />
