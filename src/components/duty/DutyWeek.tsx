@@ -14,11 +14,11 @@ function dayNum(dateStr: string): string {
 
 export function DutyWeek({
   calendar,
-  children,
+  people,
   today,
 }: {
   calendar: DutyDay[]
-  children: Record<string, { name: string; avatar_emoji: string; color: string | null }>
+  people: Record<string, { name: string; avatar_emoji: string; color: string | null }>
   today: string
 }) {
   if (calendar.length === 0) return null
@@ -28,7 +28,7 @@ export function DutyWeek({
       <h2 className="mb-2 text-sm font-medium text-ink-3">Grafik dyżurów</h2>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {calendar.map((day) => {
-          const child = day.child_id ? children[day.child_id] : undefined
+          const child = day.child_id ? people[day.child_id] : undefined
           const isToday = day.duty_date === today
           return (
             <div

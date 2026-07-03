@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/session'
 import { TaskCard } from '@/components/tasks/TaskCard'
+import { loadDutyView } from '@/lib/duty/queries'
+import { DutyBanner } from '@/components/duty/DutyBanner'
+import { DutyWeek } from '@/components/duty/DutyWeek'
 import type { Task } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -8,6 +11,7 @@ export const dynamic = 'force-dynamic'
 export default async function ZadaniaPage() {
   const user = await requireUser('child')
   const supabase = await createClient()
+  const duty = await loadDutyView()
 
   // Otwarte zadania (nieprzyjęte) — RLS dodatkowo to gwarantuje.
   // expires_at > now(): wygasłe zadania znikają natychmiast, nie czekamy na cron expire-tasks.
@@ -35,6 +39,13 @@ export default async function ZadaniaPage() {
         <p className="text-sm text-ink-3">Cześć, {user.name} {user.avatar_emoji}</p>
         <h1 className="font-display text-2xl font-bold text-ink">Dostępne zadania</h1>
       </header>
+
+      {duty && (
+        <>
+          <DutyBanner state={duty.banner} today={duty.today} />
+          <DutyWeek calendar={duty.calendar} people={duty.children} today={duty.today} />
+        </>
+      )}
 
       {error && (
         <p className="text-red-500 text-sm">Nie udało się wczytać zadań.</p>
