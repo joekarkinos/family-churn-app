@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcryptjs'
 import { redirect } from 'next/navigation'
+import { unstable_noStore as noStore } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { authEmail, derivePassword } from '@/lib/auth/credentials'
@@ -20,6 +21,7 @@ export interface FamilyMember {
 // jeszcze niezalogowany (RLS blokuje anon). Zwracamy WYŁĄCZNIE pola publiczne —
 // nigdy pin_hash ani danych bankowych.
 export async function getFamilyMembers(): Promise<FamilyMember[]> {
+  noStore() // nie cache'uj — avatar_url zmienia się przy zmianie zdjęcia
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('app_users')
