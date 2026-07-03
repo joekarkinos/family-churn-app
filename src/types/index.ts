@@ -7,6 +7,7 @@ export interface AppUser {
   name: string
   role: UserRole
   avatar_emoji: string
+  avatar_url?: string | null   // zdjęcie profilowe (ma pierwszeństwo nad emoji)
   color?: string            // akcent osoby (np. turkusowy dla Hani)
   pin_hash: string          // bcrypt hash, never stored in client state
   coin_balance: number
@@ -151,7 +152,7 @@ export interface DutyDay {
 // Stan banera dyżuru dla zalogowanego dziecka na ekranie głównym.
 export type DutyBannerState =
   | { kind: 'none' }                                              // brak dyżuru dziś, brak zaproszenia
-  | { kind: 'info'; childName: string; childEmoji: string }       // ktoś inny na dyżurze, brak zaproszenia
+  | { kind: 'info'; childName: string; childEmoji: string; childAvatarUrl?: string | null } // ktoś inny na dyżurze, brak zaproszenia
   | { kind: 'on_duty' }                                           // ja na dyżurze, mogę poprosić
   | { kind: 'awaiting'; requestId: string }                       // ja na dyżurze, czekam na zastępstwo
   | { kind: 'invited'; requestId: string; requesterName: string } // siostra prosi mnie o zastępstwo dziś

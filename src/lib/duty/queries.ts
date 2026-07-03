@@ -16,7 +16,7 @@ const CALENDAR_DAYS = 5
 export interface DutyView {
   today: string
   currentUserId: string
-  children: Record<string, { name: string; avatar_emoji: string; color: string | null }>
+  children: Record<string, { name: string; avatar_emoji: string; color: string | null; avatar_url: string | null }>
   calendar: DutyDay[]
   banner: DutyBannerState
 }
@@ -36,7 +36,7 @@ export async function loadDutyView(): Promise<DutyView | null> {
 
   const [rotRes, childRes, ovRes, reqRes] = await Promise.all([
     supabase.from('duty_rotation').select('position, child_id'),
-    supabase.from('app_users').select('id, name, avatar_emoji, color').eq('role', 'child'),
+    supabase.from('app_users').select('id, name, avatar_emoji, color, avatar_url').eq('role', 'child'),
     supabase
       .from('duty_overrides')
       .select('duty_date, child_id, source')
@@ -59,7 +59,7 @@ export async function loadDutyView(): Promise<DutyView | null> {
 
   const children: DutyView['children'] = {}
   for (const c of childRes.data ?? []) {
-    children[c.id] = { name: c.name, avatar_emoji: c.avatar_emoji, color: c.color }
+    children[c.id] = { name: c.name, avatar_emoji: c.avatar_emoji, color: c.color, avatar_url: c.avatar_url }
   }
 
   const calendar = buildDutyCalendar(today, CALENDAR_DAYS, rotation, overrides)
@@ -85,6 +85,7 @@ function computeBanner(
         kind: 'info',
         childName: children[todayDutyId].name,
         childEmoji: children[todayDutyId].avatar_emoji,
+        childAvatarUrl: children[todayDutyId].avatar_url,
       }
     }
     return { kind: 'none' }

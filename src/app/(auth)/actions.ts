@@ -12,6 +12,7 @@ export interface FamilyMember {
   name: string
   role: UserRole
   avatar_emoji: string
+  avatar_url: string | null
   color: string | null
 }
 
@@ -22,7 +23,7 @@ export async function getFamilyMembers(): Promise<FamilyMember[]> {
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('app_users')
-    .select('id, name, role, avatar_emoji, color')
+    .select('id, name, role, avatar_emoji, color, avatar_url')
     .order('role', { ascending: true })
     .order('name', { ascending: true })
 

@@ -7,6 +7,7 @@ export interface CurrentUser {
   name: string
   role: UserRole
   avatar_emoji: string
+  avatar_url: string | null
   color: string | null
   coin_balance: number
 }
@@ -22,7 +23,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data, error } = await supabase
     .from('app_users')
-    .select('id, name, role, avatar_emoji, color, coin_balance')
+    .select('id, name, role, avatar_emoji, color, avatar_url, coin_balance')
     .eq('id', user.id)
     .single()
 
