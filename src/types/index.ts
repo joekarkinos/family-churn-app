@@ -117,3 +117,42 @@ export interface WithdrawalRequest {
   paid_by?: string             // parent user id
   parent_note?: string
 }
+
+// ─── Dyżury (kalendarz + zastępstwa) ─────────────────────────────
+
+export interface DutyRotationRow {
+  position: number
+  child_id: string
+}
+
+export interface DutyOverride {
+  duty_date: string      // 'YYYY-MM-DD'
+  child_id: string
+  source: 'swap' | 'manual'
+}
+
+export type DutySwapStatus = 'pending' | 'accepted' | 'cancelled'
+
+export interface DutySwapRequest {
+  id: string
+  duty_date: string
+  requester_id: string
+  status: DutySwapStatus
+  accepted_by?: string | null
+  created_at: string
+  resolved_at?: string | null
+}
+
+export interface DutyDay {
+  duty_date: string
+  child_id: string | null
+}
+
+// Stan banera dyżuru dla zalogowanego dziecka na ekranie głównym.
+export type DutyBannerState =
+  | { kind: 'none' }                                              // brak dyżuru dziś, brak zaproszenia
+  | { kind: 'info'; childName: string; childEmoji: string }       // ktoś inny na dyżurze, brak zaproszenia
+  | { kind: 'on_duty' }                                           // ja na dyżurze, mogę poprosić
+  | { kind: 'awaiting'; requestId: string }                       // ja na dyżurze, czekam na zastępstwo
+  | { kind: 'invited'; requestId: string; requesterName: string } // siostra prosi mnie o zastępstwo dziś
+
