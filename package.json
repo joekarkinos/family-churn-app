@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "node --import tsx --test src/lib/duty/rotation.test.ts",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
     "seed:family": "tsx --env-file=.env.local scripts/seed-family.ts"
   },
   "dependencies": {
