@@ -11,6 +11,7 @@ import {
   type DutyActionResult,
 } from '@/app/(child)/duty-actions'
 import type { DutyBannerState } from '@/types'
+import { Avatar } from '@/components/ui/Avatar'
 
 export function DutyBanner({ state, today }: { state: DutyBannerState; today: string }) {
   const router = useRouter()
@@ -34,11 +35,12 @@ export function DutyBanner({ state, today }: { state: DutyBannerState; today: st
 
   if (state.kind === 'info') {
     return (
-      <div className={`${base} bg-surface`}>
-        <p className="text-sm text-ink-3">Dziś dyżur pełni</p>
-        <p className="font-display text-lg font-bold text-ink">
-          {state.childEmoji} {state.childName}
-        </p>
+      <div className={`${base} bg-surface flex items-center gap-3`}>
+        <Avatar url={state.childAvatarUrl} emoji={state.childEmoji} size={40} alt={state.childName} />
+        <div>
+          <p className="text-sm text-ink-3">Dziś dyżur pełni</p>
+          <p className="font-display text-lg font-bold text-ink">{state.childName}</p>
+        </div>
       </div>
     )
   }

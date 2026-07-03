@@ -1,4 +1,5 @@
 import type { DutyDay } from '@/types'
+import { Avatar } from '@/components/ui/Avatar'
 
 const WEEKDAYS = ['niedz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.']
 
@@ -18,7 +19,7 @@ export function DutyWeek({
   today,
 }: {
   calendar: DutyDay[]
-  people: Record<string, { name: string; avatar_emoji: string; color: string | null }>
+  people: Record<string, { name: string; avatar_emoji: string; color: string | null; avatar_url: string | null }>
   today: string
 }) {
   if (calendar.length === 0) return null
@@ -40,8 +41,12 @@ export function DutyWeek({
             >
               <span className="text-[11px] text-ink-3">{weekdayLabel(day.duty_date)}</span>
               <span className="text-xs font-medium text-ink">{dayNum(day.duty_date)}</span>
-              <span className="mt-1 text-lg" title={child?.name ?? ''}>
-                {child?.avatar_emoji ?? '—'}
+              <span className="mt-1" title={child?.name ?? ''}>
+                {child ? (
+                  <Avatar url={child.avatar_url} emoji={child.avatar_emoji} color={child.color} size={28} alt={child.name} />
+                ) : (
+                  '—'
+                )}
               </span>
               <span className="text-[11px] text-ink-3">{child?.name ?? ''}</span>
             </div>

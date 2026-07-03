@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { PinInput } from './PinInput'
 import { loginWithPin, type FamilyMember } from '@/app/(auth)/actions'
+import { Avatar } from '@/components/ui/Avatar'
 
 export function PersonPicker({ members }: { members: FamilyMember[] }) {
   const router = useRouter()
@@ -43,12 +44,7 @@ export function PersonPicker({ members }: { members: FamilyMember[] }) {
         </button>
 
         <div className="flex flex-col items-center gap-2">
-          <span
-            className="flex h-20 w-20 items-center justify-center rounded-full text-4xl"
-            style={{ backgroundColor: (selected.color ?? '#00897b') + '22' }}
-          >
-            {selected.avatar_emoji}
-          </span>
+          <Avatar url={selected.avatar_url} emoji={selected.avatar_emoji} color={selected.color} size={80} alt={selected.name} />
           <h2 className="font-display text-2xl font-bold text-ink">{selected.name}</h2>
           <p className="text-ink-3 text-sm">Wpisz swój PIN</p>
         </div>
@@ -74,12 +70,7 @@ export function PersonPicker({ members }: { members: FamilyMember[] }) {
             )}
             style={{ borderTopColor: m.color ?? '#00897b', borderTopWidth: 3 }}
           >
-            <span
-              className="flex h-16 w-16 items-center justify-center rounded-full text-3xl"
-              style={{ backgroundColor: (m.color ?? '#00897b') + '22' }}
-            >
-              {m.avatar_emoji}
-            </span>
+            <Avatar url={m.avatar_url} emoji={m.avatar_emoji} color={m.color} size={64} alt={m.name} />
             <span className="font-display font-semibold text-ink">{m.name}</span>
             <span className="text-xs text-ink-3">
               {m.role === 'parent' ? 'Rodzic' : 'Dziecko'}
