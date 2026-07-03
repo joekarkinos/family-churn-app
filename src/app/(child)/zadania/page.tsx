@@ -10,11 +10,13 @@ export default async function ZadaniaPage() {
   const supabase = await createClient()
 
   // Otwarte zadania (nieprzyjęte) — RLS dodatkowo to gwarantuje.
+  // expires_at > now(): wygasłe zadania znikają natychmiast, nie czekamy na cron expire-tasks.
   // Zadania tygodniowe na górze (reguła #4), potem wg najbliższego deadline'u.
   const { data, error } = await supabase
     .from('tasks')
     .select('*')
     .eq('status', 'open')
+    .gt('expires_at', new Date().toISOString())
     .order('deadline_type', { ascending: true }) // 'week' < 'end_of_day' alfabetycznie? -> sortujemy w JS
     .order('expires_at', { ascending: true })
 
