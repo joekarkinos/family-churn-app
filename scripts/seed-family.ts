@@ -55,6 +55,8 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 
+  const idByName: Record<string, string> = {}
+
   for (const person of FAMILY) {
     const email = authEmail(person.name)
     const pin = process.env[person.pinEnv] ?? person.pinDefault
@@ -81,6 +83,8 @@ async function main() {
       console.log(`• ${person.name}: utworzono użytkownika Auth`)
     }
 
+    idByName[person.name] = userId
+
     // 2) Ustaw ostateczne, wyprowadzone hasło Auth (nieznane nikomu).
     const password = derivePassword(userId, deriveSecret)
     const upd = await admin.auth.admin.updateUserById(userId, { password })
@@ -102,6 +106,21 @@ async function main() {
     if (profileErr) throw profileErr
     console.log(`  ↳ profil zapisany (rola: ${person.role}, PIN: ${pin})`)
   }
+
+  // Kolejność dyżurów: Sonia=0, Hania=1, Maria=2 (kotwica 2026-07-02 = poz. 0 = Sonia).
+  const ROTATION_ORDER = ['Sonia', 'Hania', 'Maria']
+  const rotationRows = ROTATION_ORDER.map((name, position) => {
+    const child_id = idByName[name]
+    if (!child_id) {
+      throw new Error(`Brak zaseedowanego dziecka do rotacji: ${name}`)
+    }
+    return { position, child_id }
+  })
+  const { error: rotErr } = await admin
+    .from('duty_rotation')
+    .upsert(rotationRows, { onConflict: 'position' })
+  if (rotErr) throw rotErr
+  console.log('• Kolejność dyżurów zapisana: ' + ROTATION_ORDER.join(' → '))
 
   console.log('\n✓ Seed rodziny zakończony.')
 }
