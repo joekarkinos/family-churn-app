@@ -38,3 +38,6 @@ next-env.d.ts
 
 # supabase
 .supabase/
+
+# playwright mcp (snapshots, console logs)
+.playwright-mcp/
