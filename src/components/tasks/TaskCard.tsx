@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { DifficultyBadge, StatusBadge, CoinBadge } from '@/components/ui/Badge'
+import { ReactivateButton } from '@/components/tasks/ReactivateButton'
 import { formatDeadline } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Task } from '@/types'
@@ -9,11 +10,13 @@ interface TaskCardProps {
   task: Task
   href?: string
   showStatus?: boolean
+  canReactivate?: boolean
 }
 
-export function TaskCard({ task, href, showStatus }: TaskCardProps) {
+export function TaskCard({ task, href, showStatus, canReactivate }: TaskCardProps) {
   const deadline = formatDeadline(task.expires_at)
   const isWeek = task.deadline_type === 'week'
+  const isExpired = task.status === 'expired' || deadline.expired
 
   const content = (
     <Card interactive={!!href} className="flex items-start gap-3">
@@ -35,6 +38,7 @@ export function TaskCard({ task, href, showStatus }: TaskCardProps) {
           >
             {deadline.text}
           </span>
+          {canReactivate && isExpired && <ReactivateButton taskId={task.id} />}
         </div>
       </div>
     </Card>
